@@ -1,0 +1,74 @@
+brooklyn.catalog:
+  publish: &jenkinsPublish
+    name: &jenkinsName "Jenkins"
+    description: &jenkinsDescription |
+      The leading open source automation server, Jenkins provides hundreds of plugins to support building, deploying and automating any project.
+    version: &jenkinsVersion "1.0.0-SNAPSHOT" # BROOKLYN_JENKINS_VERSION
+    iconUrl: &jenkinsIconUrl "https://github.com/jenkinsci.png"
+    licence: &jenkinsLicence "Apache-2.0"
+  items:
+    - id: jenkins
+      name: *jenkinsName
+      version: *jenkinsVersion
+      iconUrl: *jenkinsIconUrl
+      description: *jenkinsDescription
+      publish: *jenkinsPublish
+      itemType: entity
+      item:
+        type: org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess
+        name: *jenkinsName
+        id: jenkins
+        provisioning.properties:
+          osFamily: centos
+          osVersionRegex: 7
+        brooklyn.parameters:
+        - name: jenkins.http.port
+          label: "Jenkins HTTP port"
+          description: |
+            The Jenkins HTTP port
+          type: integer
+          default: 8080
+
+        brooklyn.config:
+          shell.env:
+            ENTITY_ID: $brooklyn:attributeWhenReady("entity.id")
+            INSTALL_DIR: $brooklyn:attributeWhenReady("install.dir")
+            JENKINS_HTTP_HOST: $brooklyn:attributeWhenReady("host.subnet.address")
+            JENKINS_HTTP_PORT: $brooklyn:config("jenkins.http.port")
+          install.command: |
+            sudo curl --retry 5 --keepalive-time 30 --speed-time 30 -L "https://pkg.jenkins.io/redhat/jenkins.repo" --output /etc/yum.repos.d/jenkins.repo
+            sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+            sudo yum update -y
+            sudo yum install -y augeas java-1.8.0-openjdk jenkins
+          customize.command: |
+            sudo augtool -Ast "Shellvars incl /etc/sysconfig/jenkins" <<-EOF
+            set /files/etc/sysconfig/jenkins/JENKINS_PORT \"${JENKINS_PORT}\"
+            set /files/etc/sysconfig/jenkins/JENKINS_LISTEN_ADDRESS \"${JENKINS_HTTP_HOST}\"
+            EOF
+          launch.command: sudo systemctl start jenkins
+          stop.command: sudo systemctl stop jenkins
+          checkRunning.command: sudo systemctl status jenkins
+
+        brooklyn.enrichers:
+          - type: org.apache.brooklyn.enricher.stock.Transformer
+            brooklyn.config:
+              uniqueTag: jenkins-main-uri-enricher
+              enricher.producer: $brooklyn:entity("jenkins")
+              enricher.triggerSensors:
+                - $brooklyn:sensor("host.address")
+              enricher.targetSensor:
+                $brooklyn:sensor("org.apache.brooklyn.core.entity.Attributes", "main.uri")
+              enricher.targetValue:
+                $brooklyn:formatString:
+                  - "http://%s:%s/"
+                  - $brooklyn:attributeWhenReady("host.address")
+                  - $brooklyn:config("jenkins.http.port")
+        brooklyn.initializers:
+          - type: org.apache.brooklyn.core.sensor.ssh.SshCommandSensor
+            brooklyn.config:
+              name: jenkins.initial.admin.password
+              description: |
+                Jenkins initial amin password
+              targetType: string
+              command: sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
