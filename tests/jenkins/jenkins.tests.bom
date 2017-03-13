@@ -1,0 +1,32 @@
+brooklyn.catalog:
+  version: &jenkinsVersion "1.0.0-SNAPSHOT" # BROOKLYN_JENKINS_VERSION
+  iconUrl: &jenkinsIconUrl "https://github.com/jenkinsci.png"
+  items:
+    - "https://raw.githubusercontent.com/brooklyncentral/common-catalog-utils/master/common-tests/src/main/resources/commontests/common.tests.bom"
+    - id: jenkins-tests
+      version: *jenkinsVersion
+      itemType: template
+      iconUrl: *jenkinsIconUrl
+      name: "Jenkins Tests"
+      item:
+        services:
+          - type: jenkins
+            id: jenkins
+          - type: test-case
+            name: "Jenkins Tests"
+            brooklyn.config:
+              timeout: 1h
+              targetId: jenkins
+              process.grep.name: "[j]enkins"
+            brooklyn.children:
+              - type: assert-up-and-running-initial
+                name: "1. Jenkins up and running"
+              - type: assert-reachable
+                name: "2. Jenkins UI reachable"
+                brooklyn.config:
+                  endpointSensor: main.uri
+                  timeout: 5m
+              - type: assert-restart-process
+                name: "3. Jenkins restart process"
+              - type: assert-stop-and-restart-process
+                name: "4. Jenkins stop and restart process"
