@@ -5,7 +5,7 @@ brooklyn.catalog:
       The leading open source automation server, Jenkins provides hundreds of plugins to support building, deploying and automating any project.
     version: &jenkinsVersion "1.0.0-SNAPSHOT" # BROOKLYN_JENKINS_VERSION
     iconUrl: &jenkinsIconUrl "https://github.com/jenkinsci.png"
-    licence: &jenkinsLicence "Apache-2.0"
+    license_code: &jenkinsLicence "Apache-2.0"
   items:
     - id: jenkins
       name: *jenkinsName
