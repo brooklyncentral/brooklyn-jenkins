@@ -1,6 +1,6 @@
 brooklyn.catalog:
   version: &jenkinsVersion "1.0.1-SNAPSHOT" # BROOKLYN_JENKINS_VERSION
-  iconUrl: &jenkinsIconUrl "https://github.com/jenkinsci.png"
+  iconUrl: &jenkinsIconUrl 'classpath://io.brooklyn.jenkins.brooklyn-jenkins:icons/jenkins.png'
   items:
     - "https://raw.githubusercontent.com/brooklyncentral/common-catalog-utils/master/common-tests/src/main/resources/commontests/common.tests.bom"
     - id: jenkins-tests
