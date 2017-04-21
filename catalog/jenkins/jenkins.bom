@@ -28,12 +28,18 @@ brooklyn.catalog:
             The Jenkins HTTP port
           type: integer
           default: 8080
+        - name: jenkins.listen.address
+          label: "Jenkins listen address"
+          description: |
+            The address Jenkins listens on
+          type: string
 
         brooklyn.config:
           shell.env:
             ENTITY_ID: $brooklyn:attributeWhenReady("entity.id")
             INSTALL_DIR: $brooklyn:attributeWhenReady("install.dir")
-            JENKINS_HTTP_HOST: $brooklyn:attributeWhenReady("host.subnet.address")
+            HOST_SUBNET_ADDRESS: $brooklyn:attributeWhenReady("host.subnet.address")
+            JENKINS_LISTEN_ADDRESS: $brooklyn:attributeWhenReady("jenkins.listen.address")
             JENKINS_HTTP_PORT: $brooklyn:config("jenkins.http.port")
           install.command: |
             sudo curl --retry 5 --keepalive-time 30 --speed-time 30 -L "https://pkg.jenkins.io/redhat/jenkins.repo" --output /etc/yum.repos.d/jenkins.repo
@@ -41,9 +47,10 @@ brooklyn.catalog:
             sudo yum update -y
             sudo yum install -y augeas java-1.8.0-openjdk jenkins
           customize.command: |
+            if [ -z "${JENKINS_LISTEN_ADDRESS}" ]; then JENKINS_LISTEN_ADDRESS="${HOST_SUBNET_ADDRESS}"; fi
             sudo augtool -Ast "Shellvars incl /etc/sysconfig/jenkins" <<-EOF
-            set /files/etc/sysconfig/jenkins/JENKINS_PORT \"${JENKINS_PORT}\"
-            set /files/etc/sysconfig/jenkins/JENKINS_LISTEN_ADDRESS \"${JENKINS_HTTP_HOST}\"
+            set /files/etc/sysconfig/jenkins/JENKINS_PORT \"${JENKINS_HTTP_PORT}\"
+            set /files/etc/sysconfig/jenkins/JENKINS_LISTEN_ADDRESS \"${JENKINS_LISTEN_ADDRESS}\"
             EOF
           launch.command: sudo systemctl start jenkins
           stop.command: sudo systemctl stop jenkins
