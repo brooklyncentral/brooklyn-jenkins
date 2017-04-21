@@ -6,7 +6,7 @@
 
     <groupId>io.brooklyn.jenkins</groupId>
     <artifactId>brooklyn-jenkins</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version> <!--BROOKLYN_JENKINS_VERSION-->
     <name>Brooklyn :: Jenkins</name>
     <packaging>bundle</packaging>
 
