@@ -32,8 +32,9 @@ brooklyn.catalog:
         - name: jenkins.listen.address
           label: "Jenkins listen address"
           description: |
-            The address Jenkins listens on
+            The address Jenkins listens on (defaulting to 0.0.0.0)
           type: string
+          default: 0.0.0.0
 
         brooklyn.config:
           shell.env:
