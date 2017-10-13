@@ -7,8 +7,12 @@
     <groupId>io.brooklyn.jenkins</groupId>
     <artifactId>brooklyn-jenkins</artifactId>
     <version>1.0.3-SNAPSHOT</version> <!--BROOKLYN_JENKINS_VERSION-->
-    <name>Brooklyn :: Jenkins</name>
     <packaging>bundle</packaging>
+    <name>Brooklyn :: Jenkins</name>
+    <description>
+        Brooklyn entity for a Jenkins.
+    </description>
+    <url>https://github.com/brooklyncentral/brooklyn-jenkins</url>
 
     <properties>
         <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
@@ -21,6 +25,7 @@
         <developerConnection>scm:git:git@github.com:brooklyncentral/brooklyn-jenkins.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
     <licenses>
         <license>
             <name>Apache 2.0</name>
@@ -28,20 +33,13 @@
         </license>
     </licenses>
 
-    <distributionManagement>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>sonatype-nexus-staging</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-            <uniqueVersion>true</uniqueVersion>
-        </repository>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>sonatype-nexus-snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <uniqueVersion>true</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
+    <!-- For the full list of developers, see contributors to https://github.com/brooklyncentral/brooklyn-jenkins -->
+    <developers>
+        <developer>
+            <name>Thomas Bouron</name>
+            <organizationUrl>https://github.com/tbouron</organizationUrl>
+        </developer>
+    </developers>
 
     <build>
         <resources>
@@ -116,4 +114,46 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>sonatype-nexus-repo</id>
+            <activation>
+                <property>
+                    <name>deployTo</name>
+                    <value>sonatype</value>
+                </property>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Nexus Release Repository</name>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>sonatype-nexus-snapshots</id>
+                    <name>Sonatype Nexus Snapshots</name>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
