@@ -3,7 +3,7 @@ brooklyn.catalog:
     name: &jenkinsName "Jenkins"
     description: &jenkinsDescription |
       The leading open source automation server, Jenkins provides hundreds of plugins to support building, deploying and automating any project.
-    version: &jenkinsVersion "1.0.3-SNAPSHOT" # BROOKLYN_JENKINS_VERSION
+    version: &jenkinsVersion "1.0.4-SNAPSHOT" # BROOKLYN_JENKINS_VERSION
     iconUrl: 'https://raw.githubusercontent.com/brooklyncentral/brooklyn-jenkins/master/resources/icons/jenkins.png'
     classpathIconUrl: &jenkinsIconUrl 'classpath://io.brooklyn.jenkins.brooklyn-jenkins:icons/jenkins.png'
     license_code: &jenkinsLicence "Apache-2.0"
